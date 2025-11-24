@@ -8,6 +8,8 @@
 - 선택 필드: `username`, `phoneNumber`, `address`, `age`
 - 모든 필드는 불변이어야 함
 
+<br/>
+
 <details>
 <summary>코드 보기</summary>
 
@@ -109,7 +111,7 @@ public class Main {
 
 </details>
 
-<br/>
+<br/><br/>
 
 ## 예제 2: 계층 구조 빌더 패턴
 
@@ -122,6 +124,8 @@ public class Main {
     - 고유 필수 속성: `isbn`, `author`(저자)
 - `Electronics` 클래스: 전자제품
     - 고유 선택 속성: `warrantyYears`(보증기간, 기본 1년)
+
+<br/>
 
 <details>
 <summary>코드 보기</summary>
