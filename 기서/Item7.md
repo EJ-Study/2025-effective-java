@@ -153,12 +153,6 @@ public synchronized void removeElementAt(int index) {
 - 배열의 활성 영역부분에 속한 원소들은 사용되고, 비활성 영역은 쓰이지 않는데 문제점은 이러한 비활성 영역을 가비지 컬렉터가 알 방법이 없다는 것
 - 보통 자신의 메모리를 직접 관리하는 클래스는 프로그래머가 항상 메모리 누수에 주의해야 함
 
-### 그렇다면 null 처리는 언제 해야할까??
-
-일반적으로 자기 메모리를 직접 관리하는 클래스라면 항시 메모리 누수에 주의해야 한다. 원소를 다 사용한 즉시 그 원소가 참조한 객체들을 다 null 처리해줘야 한다.
-stack 클래스 또한 자기 메모리를 elements 배열로 저장소 풀을 만들어 직접 관리하므로 누수에 취약할 수 밖에 없다.
-그러므로 프로그래머는 비활성 영역이 되는 순간 null처리해서 해당 객체를 더는 쓰지 않을 것임을 가비지 컬렉터에 알려야한다.
-
 ### 3. 캐시에서의 메모리 누수
 
 캐시 역시 메모리 누수를 일으키는 주범이다. 객체 참조를 캐시에 넣어두고 이 사실을 잊은 채 그 객체를 다 쓴 뒤로도 한참 그냥 놔둘 수 있다.
@@ -173,15 +167,13 @@ stack 클래스 또한 자기 메모리를 elements 배열로 저장소 풀을 �
 - 약한 참조란 `WeakHashMap`의 키로 사용되는 객체에 대한 유일한 참조가 `WeakHashMap` 내부에만 있을 때, 일반적인 참조와 달리 가비지 컬렉터에 의해 언제든지 회수될 수 있음
 
 ```html
-강한 참조
+[강한 참조]
 new 할당 후 새로운 객체를 만들어 해당객체를 참조하는 방식이다.
 참조가 해제되지 않는 이상 GC의 대상이 되지 않는다.
 
-약한 참조
+[약한 참조]
 Integer prime = 1;
-WeakReference
-<Integer> weak = new WeakReference
-  <Integer>(prime);
+WeakReference<Integer> weak = new WeakReference<Integer>(prime);
     위와 같이 WeakReference Class를 이용하여 생성이 가능하다. prime == null이 되면(해당 객체를 가리키는 참조가 WeakReference 뿐일 경우) GC 대상이 된다.
 ```
 
