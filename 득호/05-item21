@@ -1,0 +1,58 @@
+# 인터페이스는 구현하는 쪽을 생각해 설계하라
+
+### 디폴트 메서드는 (컴파일에 성공하더라도) 기존 구현체에 런타임 오류를 일으킬 수있다.
+
+자바 8 이전에는 인터페이스에 메서드를 추가하면 구현체들이 다 깨지는 문제가 있었다.  `default`  키워드가 자바 8에서 등장했기 때문이다. 그렇다고 `default` 를 이용하면 이 문제를 항상 해결할 수 있는 것도 아니다.
+
+한가지 사례로 `synchronizedCollection` 와 `removeIf` 가 있다.
+
+`Collections.synchronizedCollection` 을 사용하면 `synchronized` 키워드를 걸어서 멀티스레드 환경에서도 안전하게 사용할 수 있음을 보장해준다. 이를 위해 내부 구현체도 완벽하게 구성해뒀을 것이다.
+
+**하지만 자바 8 `default` 의 등장**
+
+```java
+default boolean removeIf(Predicate<? super E> filter) {
+        Objects.requireNonNull(filter);
+        boolean removed = false;
+        final Iterator<E> each = iterator();
+        while (each.hasNext()) {
+            if (filter.test(each.next())) {
+                each.remove();
+                removed = true;
+            }
+        }
+        return removed;
+    }
+```
+
+편의를 위해 `default` 를 사용하여 인터페이스에 해당 메서드가 추가되어 버리면 어떻게 될까?
+
+예를 들어 아래와 같은 상황을 가정해보자
+
+```java
+// 1. 멀티스레드 환경에서 안전한 리스트 생성
+Collection<String> syncList = Collections.synchronizedCollection(new ArrayList<>());
+
+// 2. 스레드 A: removeIf 호출
+syncList.removeIf(s -> s.equals("월"));
+
+// 3. 스레드 B: 동시에 add 호출
+syncList.add("금");
+```
+
+default 로 추가되었기에 syncList에서 removeIf() 메서드를 사용할 수 있지만 이는 Thread-safe한 환경을 보장하지 못한다.
+
+이 때 add(”금”) 이 수행되고 `ConcurrentModificationException` 또는 데이터 깨짐 현상이 발생한다.
+
+item18 에서 말하는 상속의 함정처럼 개발자가 허락하지 않은 코드가 추가되어 클래스에 침투해서, 기존에 세워둔 규칙을 깨뜨리는 현상이 발생한다.
+
+> `Collections.synchronizedCollection`은 이 문제를 해결하기 위해 내부적으로 `removeIf`를 재정의해서 `synchronized` 블록을 씌워놨습니다.
+>
+
+디폴트메서드는 인터페이스로부터 메서드를 제거하거나 기존 메서드의 시그니처를 수정하는 용도가 아님을 명심해야 한다?
+
+### 인터페이스를 설계할 때는 여전히 세시한 주의를 기울여야 한다.
+
+디폴트 메서드로 기존 인터페이스에 새로운 메서드를 추가하면 큰 위험도 딸려 온다.
+
+인터페이스를 릴리스한 후라도 결함을 수정하는게 가능한 경우도 있겠지만, 이를 기대해서는 안된다.
