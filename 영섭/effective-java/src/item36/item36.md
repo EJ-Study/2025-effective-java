@@ -37,7 +37,7 @@ public class Text {
 }
 
 // 사용
-text.applyStyles(EnumSet.of(Style.BOLD, Style.ITALIC));
+text.applyStyles(EnumSet.of(Style.BOLD, Style.ITALIC)); 
 ```
 
 EnumSet의 장점:
