@@ -12,16 +12,13 @@
 ### Map.merge 예
 
 - `merge(key, value, remappingFunction)`: 키가 없으면 `{key, value}` 저장, 있으면 함수를 현재 값과 주어진 값에 적용해 덮어씀.
-- 멀티셋(키별 개수) 구현 시:
 
 ```java
 // 람다: 매개변수 count, incr이 하는 일은 단순 합인데 공간을 많이 차지
-map.merge(key, 1,(count, incr) ->count +incr);
+map.merge(key, 1, (count, incr) -> count +incr);
 
 // 메서드 참조: 동일 동작을 더 짧고 명확하게 표현 (Integer::sum)
-    map.
-
-merge(key, 1,Integer::sum);
+    map.merge(key, 1,Integer::sum);
 ```
 
 - 매개변수가 많을수록 메서드 참조로 줄일 수 있는 코드가 늘어난다.
